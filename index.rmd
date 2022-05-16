@@ -1,0 +1,107 @@
+---
+title: "LINEA"
+output:
+  html_document:
+    toc: false
+    toc_float:
+      toc_collapsed: false
+    toc_depth: 4  
+    number_sections: false
+    theme: flatly
+    css: "style.css"
+
+---
+<br>
+
+## An Interface for Linear Regression
+
+
+<!--HEAD STUFF-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;400;600;800&family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+<script language="JavaScript" src="script.js"></script>
+
+<a id="back_to_top">&#8593;</a>
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(class.output = "output_style")
+knitr::opts_chunk$set(class.source = "code_style")
+```
+
+<!--HEADER STUFF-->
+<div class='dark_mode_home'>
+  <label class="switch">
+    <input type="checkbox" value="dark_mode" id="dark_mode">
+    <span class="slider round"></span>    
+  </label>
+  <br>
+  <strong>Dark Mode</strong>
+</div>
+
+<a class='github_home' href='https://github.com/paladinic/linea'>
+  <img src='img/github_white.png'/>
+  <strong>Fork it</strong>
+</a>
+
+<!--CONTENT-->
+<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+
+Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. marketing, finance). 
+
+This page covers a basic how to setup the `linea` library to analyse a time-series. We'll cover:
+
+* [Installation](#Installation): Installing and checking the library.
+* [Data Ingestion](#Data Ingestion): Importing data for this example.
+
+<br>
+<hr>
+<br>
+
+## Prerequisites
+
+To use this library an understanding of the following is assumed:
+
+* [linear regression](https://en.wikipedia.org/wiki/Linear_regression)
+* [R](https://www.r-project.org/)
+
+<br>
+<hr>
+<br>
+
+## Installation  
+
+The library can be installed from CRAN using `install.packages('linea')`
+Once installed you can check the installation.
+
+```{r}
+print(packageVersion("linea"))
+```
+
+The `linea` library works well with pipes. Used with dplyr and plotly, it can perform data analysis and visualisation with elegant code.
+
+<br>
+<hr>
+<br>
+
+## Next Steps
+
+1. The <a rhef="linea_getting_started.html">Getting Started</a> page is a good place to start learning how to build linear models with `linea`.
+
+2. The <a rhef="linea_advanced_features.html">Advanced Features</a> page shows how to implement the features of `linea` that allow users to capture <b>non-linear relationships</b>.
+
+3. The <a rhef="linea_additional_features.html">Additional Features</a> page all other functions of the library.
+
+
+<footer class="footer_home">
+  <span>
+    LINEA
+  </span>
+  by
+  <a href="linea-r.org">
+    linea-r.org
+  </a>
+  &copy;2022
+</footer>
