@@ -242,6 +242,7 @@ model %>%
 2. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
 
 
+<br>
 <footer class="footer_home">
   <span>
     LINEA
@@ -252,17 +253,4 @@ model %>%
   </a>
   &copy;
    <script>document.write(new Date().getFullYear())</script></p>
-</footer>
-
-
-
-<footer class="footer_toc">
-  <span>
-    LINEA
-  </span>
-  by
-  <a href="linea-r.org">
-    linea-r.org
-  </a>
-  &copy;2022
 </footer>
