@@ -235,6 +235,27 @@ model %>%
 <hr>
 
 
+## Next Steps
+
+1. The <a href="linea_advanced_features.html">Advanced Features</a> page shows how to implement the features of `linea` that allow users to capture <b>non-linear relationships</b>.
+
+2. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
+
+
+<footer class="footer_home">
+  <span>
+    LINEA
+  </span>
+  by
+  <a href="linea-r.org">
+    linea-r.org
+  </a>
+  &copy;
+   <script>document.write(new Date().getFullYear())</script></p>
+</footer>
+
+
+
 <footer class="footer_toc">
   <span>
     LINEA

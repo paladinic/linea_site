@@ -276,4 +276,13 @@ input:checked + .slider:before {
     text-align: center !important;
     width: 90% !important;
   }
+
+  .dark_mode_home{
+    top: 40px;
+    right: 10%;
+  }
+  .github_home{
+    top: 40px;
+    left: 10%;
+  }
 }
