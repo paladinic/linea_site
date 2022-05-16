@@ -1,0 +1,183 @@
+---
+title: "LINEA"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: false
+    toc_depth: 4  
+    number_sections: false
+    theme: flatly
+    css: "style.css"
+
+---
+
+## Getting Started
+
+
+<!--HEAD STUFF-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;400;600;800&family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+<script language="JavaScript" src="script.js"></script>
+
+<a id="back_to_top">&#8593;</a>
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(class.output = "output_style")
+knitr::opts_chunk$set(class.source = "code_style")
+```
+
+<!--HEADER STUFF-->
+<div class='dark_mode'>
+  <strong>Dark Mode</strong>
+  <br>
+  <label class="switch">
+    <input type="checkbox" value="dark_mode" id="dark_mode">
+    <span class="slider round"></span>    
+  </label>
+</div>
+
+<a class='github' href='https://github.com/paladinic/linea'>
+  <img src='https://cdn-icons-png.flaticon.com/512/2111/2111432.png'/>
+  <strong>Fork it</strong>
+</a>
+
+<span class='logo_span second_logo'>LINEA</span>
+
+<!--CONTENT-->
+<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+
+Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. Marketing, Finance). 
+
+This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
+
+* [Seasonality](#Seasonality): Installing and checking the library.
+* [GTrends](#GTrends): Importing data for this example.
+* [Categories](#Categories): Running a basic model.
+* [Visualisation](#Visualisation): Visualizing a model's output. 
+* [Pools](#Pools): Other key features of the library.
+
+We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
+
+## Additional Features
+### Seasonality
+
+Using a date column, of data-type date, we can generate *seasonality* variables with `linea::get_seasonality()`.
+Several columns will be added to the original dataframe. 
+These are dummy variables that capture some basic holidays as well as year, month, and week number.
+Also a trend variable is added which is a column that goes form 1 to n, where n is the number of rows.
+
+```{r, warning=F,message=FALSE}
+
+data = data %>%
+  get_seasonality(
+    date_col_name = 'date',
+    date_type = 'weekly ending')
+
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+```
+
+```{r, warning=F, message=FALSE}
+
+plot_ly(data) %>%
+  add_bars(y = ~ week_26,
+           x = ~ date,
+           name = 'week_26',
+           color = color_palette()[1]) %>%
+  add_bars(y = ~ new_years_eve,
+           x = ~ date,
+           name = 'new_years_eve',
+           color = color_palette()[2]) %>%
+  add_bars(y = ~ year_2019,
+           x = ~ date,
+           name = 'year_2019',
+           color = color_palette()[3]) %>%
+  layout(yaxis = list(title = 'value'),
+         title = 'Seasonality Variables',         
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+These variables can be used in the model to capture the seasonal component of the dependent variable, among other things (e.g. trend).
+
+```{r, warning=F, message=FALSE}
+model = run_model(data = data,
+                  dv = 'ecommerce',
+                  ivs = c('covid', 'christmas', 'trend','month_Dec'),
+                  id_var = 'date')
+
+summary(model)
+```
+
+Thanks to the new variables this model has a better r-squared compared to the previous.
+These variables' impact can be clearly seen using the `linea::decomping()` and `linea::decomp_chart()` functions.
+
+```{r, warning=F, message=FALSE}
+model %>%
+  decomp_chart()
+```
+
+
+<br>
+<hr>
+
+### GTrends
+
+[Google Trends](https://trends.google.com/trends/) can be a very useful source of data as google search volumes are often correlated with events and can be used as a proxy for a missing variable. The function `linea::gt_f()` will return the original dataframe with the added google trends variable.
+
+```{r, warning=F, message=FALSE}
+# data = data %>%
+#   gt_f(kw = 'ramadan',append = T) %>%
+#   gt_f(kw = 'trump',append = T) %>%
+#   gt_f(kw = 'covid',append = T) 
+# 
+# data %>%
+#   datatable(options = list(scrollX = T),rownames = NULL)
+```
+
+### Categories
+
+The output of the `linea::decomp_chart()` function can be grouped based on a `data.frame` mapping variables to categories. 
+This helps simplify the visualisation and provide focus on specific groups of variables.
+
+```{r, warning=F, message=FALSE}
+categories = data.frame(
+  variable = names(model$coefficients),
+  category = c('Base','covid','seasonality','Base'),
+  calc = rep('none',4)
+)
+
+model = run_model(
+  data = data,dv = 'ecommerce',
+  model_table = model_table,
+  categories = categories,
+  id_var = 'date'
+) 
+
+model %>% 
+  decomp_chart(variable_decomp = F)
+
+```
+
+
+<br>
+<hr>
+### Pools
+
+<em>Coming soon</em>
+
+<footer class="footer_toc">
+  <span>
+    LINEA
+  </span>
+  by
+  <a href="linea-r.org">
+    linea-r.org
+  </a>
+  &copy;2022
+</footer>

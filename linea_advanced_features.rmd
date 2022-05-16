@@ -1,0 +1,511 @@
+---
+title: "LINEA"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: false
+    toc_depth: 4  
+    number_sections: false
+    theme: flatly
+    css: "style.css"
+
+---
+
+## Getting Started
+
+
+<!--HEAD STUFF-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;400;600;800&family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+<script language="JavaScript" src="script.js"></script>
+
+<a id="back_to_top">&#8593;</a>
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(class.output = "output_style")
+knitr::opts_chunk$set(class.source = "code_style")
+```
+
+<!--HEADER STUFF-->
+<div class='dark_mode'>
+  <strong>Dark Mode</strong>
+  <br>
+  <label class="switch">
+    <input type="checkbox" value="dark_mode" id="dark_mode">
+    <span class="slider round"></span>    
+  </label>
+</div>
+
+<a class='github' href='https://github.com/paladinic/linea'>
+  <img src='https://cdn-icons-png.flaticon.com/512/2111/2111432.png'/>
+  <strong>Fork it</strong>
+</a>
+
+<span class='logo_span second_logo'>LINEA</span>
+
+<!--CONTENT-->
+<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+
+Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. Marketing, Finance). 
+
+This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
+
+* [Non-linear Transformations](#Non-linear Transformations): What
+* [Non-linear Models](#Non-linear Models): Importing data for this example.
+* [Testing](#Testing): Running multiple models to quickly test different transformations.
+
+We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
+
+## Advanced Features
+### Non-linear Transformations
+
+`linea` provides a few default *transformations*. These are mathematical functions meant to capture non linear relationships in the data. These functions are embedded in the library but are also available for use.
+
+#### Decay
+
+The `linea::decay()` function applies a decay by adding to each data point a percentage of the previous. 
+This transformation is meant to capture the impact, over time, of an event.
+This function only makes sense on time-bound models.
+
+```{r, warning=F, message=FALSE}
+
+
+raw_variable = data$online_media
+dates = data$date
+
+plot_ly() %>%
+  add_lines(y = raw_variable, x = dates, name = 'raw') %>%
+  add_lines(y = decay(raw_variable, decay = 0.5),
+            x = dates,
+            name = 'transformed: decay 50%') %>%
+  add_lines(y = decay(raw_variable, decay = 0.75),
+            x = dates,
+            name = 'transformed: decay 75%') %>%
+  add_lines(y = decay(raw_variable, decay = 0.95),
+            x = dates,
+            name = 'transformed: decay 95%') %>%
+  layout(title = 'decay',
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+<br>
+<hr>
+
+#### Diminish
+
+The `linea::diminish()` function applies a negative exponential function:
+
+$$\ 1 - e^{-v/m} $$
+
+or..
+
+$$\ 1- \frac{1}{e^{v/m}} $$
+Where `v` is the vector to be transformed and `m` defines the shape of the transformation. Here is a visualization of the transformation.
+
+```{r message=FALSE, warning=FALSE}
+
+raw_variable = data$christmas
+dates = data$date
+
+plot_ly() %>%
+  add_lines(y = raw_variable, x = dates, name = 'raw') %>%
+  add_lines(
+    y = diminish(raw_variable, m = 0.3, abs = F),
+    x = dates,
+    name = 'transformed: diminish 30%',
+    yaxis = "y2"
+  ) %>%
+  layout(title = 'diminish',
+         yaxis2 = list(overlaying = "y",
+                       showgrid = F,
+                       side = "right"), 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+<br>
+<hr>
+This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. 
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_lines(
+      x = raw_variable,
+      y = diminish(raw_variable,.25,F),
+      name = 'diminish 25%',
+      line = list(shape = "spline")
+    ) %>%   
+  add_lines(
+      x = raw_variable,
+      y = diminish(raw_variable,.5,F),
+      name = 'diminish 50%',
+      line = list(shape = "spline")
+    ) %>% 
+  add_lines(
+      x = raw_variable,
+      y = diminish(raw_variable,.75,F),
+      name = 'diminish 75%',
+      line = list(shape = "spline")
+    ) %>% 
+  layout(title = 'raw vs. diminished', 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_trace(
+      x = raw_variable,
+      y = diminish(raw_variable,.5,F)
+    ) %>% 
+  layout(title = 'raw vs. diminished (m = 10%)', 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+#### Hill
+
+The `linea::hill_function()` function applies a negative exponential function by adding to each data point a percentage of the previous. 
+This transformation is meant to capture relationships that exhibit diminishing returns.
+
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>%
+  add_lines(y = raw_variable, x = dates, name = 'raw') %>%
+  add_lines(
+    y = hill_function(raw_variable, m = 5,k = 25),
+    x = dates,
+    name = 'transformed: hill_function m = 5,k = 25',
+    yaxis = "y2"
+  ) %>%
+  layout(title = 'diminish',
+         yaxis2 = list(overlaying = "y",
+                       showgrid = F,
+                       side = "right"), 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+<br>
+<hr>
+This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. 
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 5,k = 25)
+    ) %>% 
+  layout(title = 'raw vs. hill_function m = 5,k = 25', 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+#### Lag
+
+The `linea::lag()` function applies a lag to the data. 
+This transformation is meant to capture relationships that are lagged in time.
+This function only makes sense on time-bound models.
+
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_lines(y = raw_variable, x = dates, name = 'raw') %>%
+  add_lines(
+    y = lag(raw_variable, l = 1),
+    x = dates,
+    name = 'transformed: lag 1',
+  ) %>%
+  add_lines(
+    y = lag(raw_variable, l = 5),
+    x = dates,
+    name = 'transformed: lag 5',
+  ) %>%
+  add_lines(
+    y = lag(raw_variable, l = 10),
+    x = dates,
+    name = 'transformed: lag 10',
+  )  %>% 
+  layout(plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)",
+         title = 'lag',
+         xaxis = list(showgrid = F))
+
+```
+<br>
+<hr>
+
+
+#### Moving Average
+
+The `linea::ma()` function applies a moving average to the data. 
+This transformation is meant to capture relationships that are smoothed over time.
+This function only makes sense on time-bound models.
+
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_lines(y = raw_variable, x = dates, name = 'raw') %>%
+  add_lines(
+    y = ma(raw_variable, width = 5),
+    x = dates,
+    name = 'transformed: ma 5',
+  ) %>%
+  add_lines(
+    y = ma(raw_variable, width = 15),
+    x = dates,
+    name = 'transformed: ma 15',
+  ) %>% 
+  add_lines(
+    y = ma(raw_variable, width = 25),
+    x = dates,
+    name = 'transformed: ma 25',
+  ) %>% 
+  add_lines(
+    y = ma(raw_variable, width = 25,align = 'left'),
+    x = dates,
+    name = 'transformed: lag 25 left',
+  ) %>% 
+  layout(plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)",
+         xaxis = list(showgrid = F),
+         title='ma')
+
+```
+<br>
+<hr>
+
+
+### Non-linear Models
+
+`linea` can capture non-linear relationships by applying transformations to the raw data, and then generating the regression for the transformed data. 
+This can be accomplished using a model table which specifies each variable's transformation parameters. The function `linea::build_model_table()` can be used to generate the blank model table.
+
+```{r, warning=F, message=FALSE}
+model_table = build_model_table(ivs =  c('covid','christmas','trend'))
+
+model_table %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = T,
+                           dom = "t"))
+```
+
+The model table can be written as a CSV or Excel and modified outside of R, or using dplyr as shown below. In this example the model run will apply the `linea::dim_rets()` function (with a parameter of 0.5, to the "covid" variable. 
+
+```{r, warning=F, message=FALSE}
+model_table = model_table %>%
+  mutate(diminish = if_else(variable ==  'covid','10',diminish)) %>% 
+  mutate(decay = if_else(variable ==  'covid','.5',decay))
+
+model_table %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = T,
+                           dom = "t"))
+```
+
+The model table can be used as an input in the `linea::run_model()` function. The `linea::response_curves()` function will display the non-linear relationship capture by the model.
+
+```{r, warning=F, message=FALSE}
+model = run_model(data = data,
+                  dv = 'ecommerce',
+                  model_table = model_table)
+
+model %>% 
+  response_curves(
+    x_min = 0,
+    x_max = 30,
+    y_min = 0,
+    y_max = 20000,
+    interval = 0.01
+    )
+```
+<br>
+<hr>
+
+### Testing
+
+#### Unused Variables
+
+The function `linea::what_next()` can be used to run a model for each of the unused variables in the data. The function will run the current model specification with the additional unused variable. This will return a `data.frame` containing the statistics of each model run. 
+
+```{r, warning=F, message=FALSE}
+model %>% 
+  what_next() %>% 
+  datatable(rownames = NULL)
+```
+
+#### Parameter Tuning
+
+Similarly, to find the right parameters for the non-linear relationship, the function `linea::what_trans()` can be used to run multiple models with a range of parameters. If parameters are passed for multiple transformations, the function will run models for all combinations. The inputs for this function are:
+
+* the starting model
+* a variable name, present in the data
+* a table (i.e. trans_df) specifying the values of the parameters
+
+The trans_df can be built as follows:
+
+```{r, warning=F, message=FALSE}
+
+trans_df = data.frame(
+  name = c('diminish', 'decay', 'lag', 'ma'),
+  func = c(
+    'linea::diminish(x,a)',
+    'linea::decay(x,a)',
+    'linea::lag(x,a)',
+    'linea::ma(x,a)'
+  ),
+  order = 1:4
+) %>%
+  dplyr::mutate(val = '') %>%
+  dplyr::mutate(val = dplyr::if_else(condition = name == 'diminish',
+                                     '0.5,1,10,100,1000',
+                                     val))
+
+
+trans_df %>% 
+  datatable(rownames = NULL)
+
+```
+
+```{r, warning=F, message=FALSE}
+model %>% 
+  what_trans(trans_df = trans_df,
+             variable ='offline_media') %>% 
+  datatable(rownames = NULL)
+```
+
+## Additional Features
+### Seasonality
+
+Using a date column, of data-type date, we can generate *seasonality* variables with `linea::get_seasonality()`.
+Several columns will be added to the original dataframe. 
+These are dummy variables that capture some basic holidays as well as year, month, and week number.
+Also a trend variable is added which is a column that goes form 1 to n, where n is the number of rows.
+
+```{r, warning=F,message=FALSE}
+
+data = data %>%
+  get_seasonality(
+    date_col_name = 'date',
+    date_type = 'weekly ending')
+
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+```
+
+```{r, warning=F, message=FALSE}
+
+plot_ly(data) %>%
+  add_bars(y = ~ week_26,
+           x = ~ date,
+           name = 'week_26',
+           color = color_palette()[1]) %>%
+  add_bars(y = ~ new_years_eve,
+           x = ~ date,
+           name = 'new_years_eve',
+           color = color_palette()[2]) %>%
+  add_bars(y = ~ year_2019,
+           x = ~ date,
+           name = 'year_2019',
+           color = color_palette()[3]) %>%
+  layout(yaxis = list(title = 'value'),
+         title = 'Seasonality Variables',         
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+These variables can be used in the model to capture the seasonal component of the dependent variable, among other things (e.g. trend).
+
+```{r, warning=F, message=FALSE}
+model = run_model(data = data,
+                  dv = 'ecommerce',
+                  ivs = c('covid', 'christmas', 'trend','month_Dec'),
+                  id_var = 'date')
+
+summary(model)
+```
+
+Thanks to the new variables this model has a better r-squared compared to the previous.
+These variables' impact can be clearly seen using the `linea::decomping()` and `linea::decomp_chart()` functions.
+
+```{r, warning=F, message=FALSE}
+model %>%
+  decomp_chart()
+```
+
+
+<br>
+<hr>
+
+### GTrends
+
+[Google Trends](https://trends.google.com/trends/) can be a very useful source of data as google search volumes are often correlated with events and can be used as a proxy for a missing variable. The function `linea::gt_f()` will return the original dataframe with the added google trends variable.
+
+```{r, warning=F, message=FALSE}
+# data = data %>%
+#   gt_f(kw = 'ramadan',append = T) %>%
+#   gt_f(kw = 'trump',append = T) %>%
+#   gt_f(kw = 'covid',append = T) 
+# 
+# data %>%
+#   datatable(options = list(scrollX = T),rownames = NULL)
+```
+
+### Categories
+
+The output of the `linea::decomp_chart()` function can be grouped based on a `data.frame` mapping variables to categories. 
+This helps simplify the visualisation and provide focus on specific groups of variables.
+
+```{r, warning=F, message=FALSE}
+categories = data.frame(
+  variable = names(model$coefficients),
+  category = c('Base','covid','seasonality','Base'),
+  calc = rep('none',4)
+)
+
+model = run_model(
+  data = data,dv = 'ecommerce',
+  model_table = model_table,
+  categories = categories,
+  id_var = 'date'
+) 
+
+model %>% 
+  decomp_chart(variable_decomp = F)
+
+```
+
+
+<br>
+<hr>
+### Pools
+
+<em>Coming soon</em>
+
+<footer class="footer_toc">
+  <span>
+    LINEA
+  </span>
+  by
+  <a href="linea-r.org">
+    linea-r.org
+  </a>
+  &copy;2022
+</footer>
