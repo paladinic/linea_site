@@ -73,7 +73,7 @@ To use this library an understanding of the following is assumed:
 
 ## Installation  
 
-The library can be installed from CRAN using `install.packages('linea')`
+The library can be installed from CRAN using `install.packages('linea')` or from GitHub using `devtools::install_github('paladinic/linea')`.
 Once installed you can check the installation.
 
 ```{r}

@@ -40,7 +40,7 @@ knitr::opts_chunk$set(class.source = "code_style")
 </div>
 
 <a class='github' href='https://github.com/paladinic/linea'>
-  <img src='https://cdn-icons-png.flaticon.com/512/2111/2111432.png'/>
+  <img src='img/github_white.png'/>
   <strong>Fork it</strong>
 </a>
 
@@ -53,8 +53,6 @@ Linear models are commonly used in a variety of contexts including natural and s
 
 This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
 
-* [Prerequisites](#Prerequisites)
-* [Installation](#Installation): Installing and checking the library
 * [Data Ingestion](#Data Ingestion): Importing data for this example
 * [First Model](#First Model): Running a basic model
 * [Visualisation](#Visualisation): Visualizing a model's output 
@@ -62,41 +60,15 @@ This page covers a basic implementation of the `linea` library to analyse a time
 
 We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
 
-### Prerequisites
+we start by importing `linea` and some other useful libraries.
 
-To use this library an understanding of the following is assumed:
+```{r, warning=F,message=FALSE}
 
-* [linear regression](https://en.wikipedia.org/wiki/Linear_regression)
-* [R](https://www.r-project.org/)
+library(linea) # modelling
+library(tidyverse) # data manipulation
+library(plotly) # visualization
+library(DT) # visualization
 
-### Installation  
-
-The library can be installed from github as follows:
-
-
-```{r include=TRUE, warning=F, message=F}
-# cran version
-# install.packages('linea')
-
-# development version
-# devtools::install_github('paladinic/linea')
-```
-
-Once installed you can check the installation.
-
-```{r}
-print(packageVersion("linea"))
-```
-
-The `linea` library works well with pipes. Used with dplyr and plotly, it can perform data analysis and visualisation with elegant code.
-
-```{r load-packages, include=TRUE, warning=F, message=F}
-
-library(linea) # the library in question
-
-library(dplyr) # for pipes (%>%) and data manipulation
-library(plotly) # for interactive charts
-library(DT) # for interactive tables
 ```
 
 

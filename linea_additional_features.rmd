@@ -12,8 +12,7 @@ output:
 
 ---
 
-## Setup
-
+## Additional Features
 
 <!--HEAD STUFF-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,33 +39,127 @@ knitr::opts_chunk$set(class.source = "code_style")
 </div>
 
 <a class='github' href='https://github.com/paladinic/linea'>
-  <img src='https://cdn-icons-png.flaticon.com/512/2111/2111432.png'/>
+  <img src='img/github_white.png'/>
   <strong>Fork it</strong>
 </a>
 
 <span class='logo_span second_logo'>LINEA</span>
 
 <!--CONTENT-->
-<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+<span class='logo_span'>LINEA</span> offers a few useful features to make modelling quicker, simpler and more accurate. This page covers a basic implementation of the features below:
 
-Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. Marketing, Finance). 
+* [Categories](#Categories): Aggregate and visualize your variables
+* [Seasonality](#Seasonality): Automatically generate seasonality variables
+* [Testing](#Testing): Running multiple models to quickly test different variables.
+* [GTrends](#GTrends): Import Google trends data
+* [Pools](#Pools): Build models with panel data
 
-This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
+We will run simple models on some fictitious data sourced from Google trends. The aim of this exercise will be to demonstrate the use of the features above.
 
-* [Seasonality](#Seasonality): Installing and checking the library.
-* [GTrends](#GTrends): Importing data for this example.
-* [Categories](#Categories): Running a basic model.
-* [Visualisation](#Visualisation): Visualizing a model's output. 
-* [Pools](#Pools): Other key features of the library.
+we start by importing `linea` and some other useful libraries.
 
-We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
+```{r, warning=F,message=FALSE}
 
-## Additional Features
+library(linea) # modelling
+library(tidyverse) # data manipulation
+library(plotly) # visualization
+library(DT) # visualization
+
+```
+
+### Categories
+
+The output of the `linea::decomp_chart()` function can be grouped based on a `data.frame` mapping variables to categories and specific operations (i.e. *max* and *min*). This helps simplify the visualization and provide focus on specific groups of variables. Lets start by looking at a non-aggregated, *variable decomposition*.
+
+First, we import some data...
+
+```{r, warning=F,message=FALSE}
+
+data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.csv'
+
+data = read_xcsv(file = data_path)
+
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+```
+
+...and run a model.
+
+```{r, warning=F,message=FALSE}
+
+dv = 'ecommerce'
+ivs = c('christmas','covid','black.friday','offline_media')
+
+model = data %>% 
+  run_model(dv = dv,
+            ivs = ivs)
+
+summary(model)
+
+```
+
+
+Now we can plot our variable decomposition.
+
+```{r, warning=F, message=FALSE}
+
+model %>% 
+  decomp_chart(variable_decomp = T)
+
+```
+
+Now lets create a categories `data.frame` to group the 'christmas' and 'black.friday' variables together.
+
+```{r, warning=F, message=FALSE}
+categories = data.frame(
+  variable = ivs, # variables from the model
+  category = c('seasonality','covid','seasonality','media')
+)
+
+model = run_model(
+  data = data,
+  dv = dv,
+  ivs = ivs,
+  categories = categories,
+  id_var = 'date' # specify horizontal axis
+) 
+
+model %>% 
+  decomp_chart(variable_decomp = F)
+
+```
+
+The 'christmas' and 'black.friday' variables are derived from Google trends, which captures the impact of these events over time. As there is always a level of search for these keywords throughout the year, the series never reaches zero. Using the `calc` column of the categories `data.frame` we can tell `linea` to add this minimum value of search to the intercept, isolating the impact of the variation of the variable.
+
+
+```{r, warning=F, message=FALSE}
+categories = data.frame(
+  variable = ivs, # variables from the model
+  category = c('seasonality','covid','seasonality','media'),
+  calc = c('min','none','min','none')
+)
+
+model = run_model(
+  data = data,
+  dv = dv,
+  ivs = ivs,
+  categories = categories,
+  id_var = 'date' # specify horizontal axis
+) 
+
+model %>% 
+  decomp_chart(variable_decomp = F)
+
+```
+
+<br>
+<hr>
 ### Seasonality
 
-Using a date column, of data-type date, we can generate *seasonality* variables with `linea::get_seasonality()`.
-Several columns will be added to the original dataframe. 
-These are dummy variables that capture some basic holidays as well as year, month, and week number.
+While the model above captures some of the variation from our `ecommerce` variable, there is still a lot left unexplained. Using a date column, of data-type date, we can generate *seasonality* variables with `linea::get_seasonality()`.
+Several columns will be added to the original `data.frame`. 
+These are mainly dummy variables that capture some basic holidays as well as year, month, and week number.
 Also a trend variable is added which is a column that goes form 1 to n, where n is the number of rows.
 
 ```{r, warning=F,message=FALSE}
@@ -106,71 +199,253 @@ plot_ly(data) %>%
 These variables can be used in the model to capture the seasonal component of the dependent variable, among other things (e.g. trend).
 
 ```{r, warning=F, message=FALSE}
+
+ivs = c('christmas','covid','black.friday','offline_media','trend','month_Dec')
+
 model = run_model(data = data,
-                  dv = 'ecommerce',
-                  ivs = c('covid', 'christmas', 'trend','month_Dec'),
+                  dv = dv,
+                  ivs = ivs,
                   id_var = 'date')
 
 summary(model)
 ```
 
-Thanks to the new variables this model has a better r-squared compared to the previous.
-These variables' impact can be clearly seen using the `linea::decomping()` and `linea::decomp_chart()` functions.
+Thanks to the new variables this model has a better r-squared (~86%) compared to the previous. The impact of these variables can be seen clearly using the `linea::decomp_chart()` function.
 
 ```{r, warning=F, message=FALSE}
+
 model %>%
   decomp_chart()
+
 ```
 
+To simplify this visualization it is worth using categories, as demonstrated previously.
+
+```{r, warning=F, message=FALSE}
+
+categories = data.frame(
+  variable = ivs, # variables from the model
+  category = c('seasonality','covid','seasonality','media','Base','seasonality'),
+  calc = c('min','none','min','none','none','none')
+)
+
+model = run_model(data = data,
+                  categories = categories,
+                  dv = dv,
+                  ivs = ivs,
+                  id_var = 'date')
+
+model %>% decomp_chart()
+
+```
 
 <br>
 <hr>
+
+### Testing
+
+While the model is improving, thanks to the seasonal variables introduced, selecting which variable could be a good fit for the model can be tricky and tedious. 
+
+```{r, warning=F, message=FALSE}
+
+
+df = model %>% what_next()
+
+df %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+
+```
+
+As shown above, the `linea::what_next()` function generates a `data.frame` where each row represents a variable in our data, and the impact it would have on our model in terms of:
+
+* adjusted R squared
+* coefficient
+* t statistic
+
+We can now quickly see which variables are more likely to benefit the model.
+
+```{r, warning=F, message=FALSE}
+ivs = c('christmas','covid','black.friday','offline_media','trend','month_Dec','year_2021','week_51')
+
+categories = data.frame(
+  variable = ivs, # variables from the model
+  category = c('seasonality','covid','seasonality','media','Base','seasonality','covid','seasonality'),
+  calc = c('min','none','min','none','none','none','none','none')
+)
+
+model = run_model(data = data,
+                  categories = categories,
+                  dv = dv,
+                  ivs = ivs,
+                  id_var = 'date')
+
+summary(model)
+
+```
+
+```{r, warning=F, message=FALSE}
+
+model %>% decomp_chart()
+
+```
 
 ### GTrends
 
-[Google Trends](https://trends.google.com/trends/) can be a very useful source of data as google search volumes are often correlated with events and can be used as a proxy for a missing variable. The function `linea::gt_f()` will return the original dataframe with the added google trends variable.
+The model is getting better and better, with an adjusted R squared almost reaching 90%. This doesn't mean it can't be improved further!
+[Google Trends](https://trends.google.com/trends/) can be a very useful source of data as Google search volumes are often correlated with events and can be used as a proxy for a missing variable. The function `linea::gt_f()` will return the original `data.frame` with the added Google trends variable.
 
 ```{r, warning=F, message=FALSE}
-# data = data %>%
-#   gt_f(kw = 'ramadan',append = T) %>%
-#   gt_f(kw = 'trump',append = T) %>%
-#   gt_f(kw = 'covid',append = T) 
-# 
-# data %>%
-#   datatable(options = list(scrollX = T),rownames = NULL)
+data = data %>%
+  gt_f(kw = 'ramadan',append = T) %>%
+  gt_f(kw = 'trump',append = T) %>%
+  gt_f(kw = 'prime day',append = T) %>%
+  gt_f(kw = 'amazon workers',append = T)
+
+data %>%
+  datatable(options = list(scrollX = T),rownames = NULL)
 ```
 
-### Categories
-
-The output of the `linea::decomp_chart()` function can be grouped based on a `data.frame` mapping variables to categories. 
-This helps simplify the visualisation and provide focus on specific groups of variables.
 
 ```{r, warning=F, message=FALSE}
+
+plot_ly(data) %>%
+  add_lines(y = ~ gtrends_ramadan,
+           x = ~ date,
+           name = 'gtrends_ramadan',
+           color = color_palette()[1]) %>%
+  add_lines(y = ~ gtrends_trump,
+           x = ~ date,
+           name = 'gtrends_trump',
+           color = color_palette()[2]) %>%
+  add_lines(y = ~ `gtrends_prime day`,
+           x = ~ date,
+           name = 'gtrends_prime day',
+           color = color_palette()[3]) %>%
+  layout(yaxis = list(title = 'value'),
+         title = 'Google Trend Variables',         
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+Now that these variables are part of our data, we can use the `linea::what_next()` function to see if they can be added to the model.
+
+
+```{r, warning=F, message=FALSE}
+
+
+df = model %>% what_next(data = data)
+
+df %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+
+```
+
+As shown from the table above, the new variable, `gtrends_prime day`, seems like a sensible addition to the model.
+
+```{r, warning=F, message=FALSE}
+ivs = c('christmas','covid','black.friday','offline_media','trend','month_Dec','year_2021','week_51','gtrends_prime day')
+
+model = run_model(data = data,
+                  categories = categories,
+                  dv = dv,
+                  ivs = ivs,
+                  id_var = 'date')
+
+summary(model)
+
+```
+
+Using the variable decomposition we can see the new variable is nicely fitting that July peak.
+
+```{r, warning=F, message=FALSE}
+
+model %>% decomp_chart(variable_decomp = T)
+
+```
+
+The model has an R squared greater than 90% and be presented in a more polished way using categories and other charting functions. 
+
+```{r, warning=F, message=FALSE}
+
+ivs = c('christmas','covid','black.friday','offline_media','trend','month_Dec','year_2021','week_51','gtrends_prime day')
+
 categories = data.frame(
-  variable = names(model$coefficients),
-  category = c('Base','covid','seasonality','Base'),
-  calc = rep('none',4)
+  variable = ivs, # variables from the model
+  category = c('seasonality','covid','retail events','media','Base','seasonality','covid','seasonality','retail events'),
+  calc = c('min','none','min','none','none','none','none','none','none')
 )
 
-model = run_model(
-  data = data,dv = 'ecommerce',
-  model_table = model_table,
-  categories = categories,
-  id_var = 'date'
-) 
+model = run_model(data = data,
+                  categories = categories,
+                  dv = dv,
+                  ivs = ivs,
+                  id_var = 'date')
 
 model %>% 
-  decomp_chart(variable_decomp = F)
+  decomp_chart()
+
+```
+```{r, warning=F, message=FALSE}
+
+model %>% fit_chart()
 
 ```
 
-
-<br>
-<hr>
 ### Pools
 
-<em>Coming soon</em>
+Another feature available relates to [Panel Data and Pooled Models](https://en.wikipedia.org/wiki/Panel_data). `linea`'s pooling functionality will divide the dependent variable by the mean of each group (pool, panel, region, etc...). When the coefficients are then multiplied by that same mean, we get a scaled coefficient for each group.
 
+Lets start by looking at some pooled data. As we can see, the data below, generated again through Google trends, has a non-numeric variable, `country`. 
+
+```{r, warning=F, message=FALSE}
+
+data_path = 'https://raw.githubusercontent.com/paladinic/data/main/pooled%20data.csv'
+
+data = read_xcsv(file = data_path)
+
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+```
+
+```{r, warning=F, message=FALSE}
+
+dv = 'amazon'
+ivs = c('christmas','rakhi','diwali')
+id_var = 'Week'
+
+model = run_model(data = data,
+                  dv = dv,
+                  ivs = ivs,
+                  id_var = id_var,
+                  normalise_by_pool = T)
+
+model %>% 
+  decomp_chart()
+
+```
+In the decomposition above, the model's decomposition is simply aggregated, while still considering the re-scaled coefficients.
+The visualization functions, such as the `linea::decomp_chart()` function, allow to filter the visualization based on the pool, as shown below.
+
+```{r, warning=F, message=FALSE}
+model %>% 
+  decomp_chart(pool = 'UK')
+
+```
+
+```{r, warning=F, message=FALSE}
+model %>% 
+  fit_chart(pool = 'India') 
+
+```
+
+```{r, warning=F, message=FALSE}
+model %>% 
+  response_curves() 
+
+```
 
 ## Next Steps
 
