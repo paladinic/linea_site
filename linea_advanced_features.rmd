@@ -13,8 +13,8 @@ output:
 ---
 
 <div class='nav'>
-  <a href='linea_getting_started.html'>Getting Started</a>
-  <a href='linea_additional_features.html'>Additional Features</a>
+  <a href='linea_getting_started.html'>Getting Started</a>|
+  <a href='linea_additional_features.html'>Additional Features</a>|
   <a href='linea_advanced_features.html'>Advanced Features</a>
 </div>
 
