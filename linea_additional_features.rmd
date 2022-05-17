@@ -16,6 +16,16 @@ output:
 
 <hr>
 
+we start by importing `linea` and some other useful libraries.
+
+```{r, warning=F,message=FALSE}
+
+library(linea) # modelling
+library(tidyverse) # data manipulation
+library(plotly) # visualization
+library(DT) # visualization
+
+```
 
 
 ## Additional Features

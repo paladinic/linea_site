@@ -12,11 +12,27 @@ output:
 
 ---
 
+
+<!--HEAD STUFF-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;400;600;800&family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+<script language="JavaScript" src="script.js"></script>
+
+<a id="back_to_top">&#8593;</a>
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(class.output = "output_style")
+knitr::opts_chunk$set(class.source = "code_style")
+```
+
+<!--CONTENT-->
+
 <div class='nav'><a href='index.html'>Home</a><a href='linea_getting_started.html'>Getting Started</a><a href='linea_additional_features.html'>Additional Features</a><a href='linea_advanced_features.html'>Advanced Features</a></div>
 
 <hr>
-
-
 
 <div class='dark_mode'>
   <label class="switch">
@@ -34,13 +50,11 @@ output:
 
 <span class='logo_span second_logo'>LINEA</span>
 
-<!--CONTENT-->
 
 ## Advanced Features
 
-<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
-
-Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. Marketing, Finance). 
+One of <span class='logo_span'>LINEA</span>'s main advantages is the simplicity with which it can capture non-linear relations. 
+Capturing non-linear relations is fundamental in when applying regression as these are more realistic representations of the real world.
 
 This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
 
@@ -48,11 +62,39 @@ This page covers a basic implementation of the `linea` library to analyse a time
 * [Non-linear Models](#Non-linear Models): Importing data for this example.
 * [Advanced Testing](#Advanced Testing): Running multiple models to quickly test different transformations.
 
-We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
+We will run a simple model on some fictitious data sourced from Google trends to understand what variables seem to have an impact on the `ecommerce` variable.
+
+We start by importing `linea`, some other useful libraries, and some data.
+
+```{r, warning=F,message=FALSE}
+
+library(linea) # modelling
+library(tidyverse) # data manipulation
+library(plotly) # visualization
+library(DT) # visualization
+
+data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.csv'
+
+data = read_xcsv(file = data_path)
+data = data %>% 
+  get_seasonality(date_col_name = 'date',date_type = 'weekly starting')
+
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+
+```
+
 
 ### Non-linear Transformations
 
-`linea` provides a few default *transformations*. These are mathematical functions meant to capture non linear relationships in the data. These functions are embedded in the library but are also available for use.
+`linea` provides a few default *transformations* meant to capture non-linear relationships in the data:
+
+* Decay
+* Diminish
+* Hill
+* Lag
+* Moving Average
 
 #### Decay
 
@@ -167,8 +209,9 @@ plot_ly() %>%
 
 #### Hill
 
-The `linea::hill_function()` function applies a negative exponential function by adding to each data point a percentage of the previous. 
-This transformation is meant to capture relationships that exhibit diminishing returns.
+The `linea::hill_function()` function applies a similar transformation to `linea::diminish()` as it captures diminishing returns. The function requires for more inputs though, and allows to generate a s-curve.
+
+$$\ b - \frac{b*k^m}{k^m + v^m}$$
 
 ```{r, warning=F, message=FALSE}
 
@@ -217,19 +260,19 @@ This function only makes sense on time-bound models.
 plot_ly() %>% 
   add_lines(y = raw_variable, x = dates, name = 'raw') %>%
   add_lines(
-    y = lag(raw_variable, l = 1),
-    x = dates,
-    name = 'transformed: lag 1',
-  ) %>%
-  add_lines(
-    y = lag(raw_variable, l = 5),
+    y = linea::lag(raw_variable, l = 5),
     x = dates,
     name = 'transformed: lag 5',
   ) %>%
   add_lines(
-    y = lag(raw_variable, l = 10),
+    y = linea::lag(raw_variable, l = 10),
     x = dates,
     name = 'transformed: lag 10',
+  ) %>%
+  add_lines(
+    y = linea::lag(raw_variable, l = 20),
+    x = dates,
+    name = 'transformed: lag 20',
   )  %>% 
   layout(plot_bgcolor  = "rgba(0, 0, 0, 0)",
          paper_bgcolor = "rgba(0, 0, 0, 0)",
@@ -270,6 +313,11 @@ plot_ly() %>%
     y = ma(raw_variable, width = 25,align = 'left'),
     x = dates,
     name = 'transformed: lag 25 left',
+  ) %>%
+  add_lines(
+    y = ma(raw_variable, width = 25,align = 'right'),
+    x = dates,
+    name = 'transformed: lag 25 right',
   ) %>% 
   layout(plot_bgcolor  = "rgba(0, 0, 0, 0)",
          paper_bgcolor = "rgba(0, 0, 0, 0)",
@@ -287,7 +335,10 @@ plot_ly() %>%
 This can be accomplished using a model table which specifies each variable's transformation parameters. The function `linea::build_model_table()` can be used to generate the blank model table.
 
 ```{r, warning=F, message=FALSE}
-model_table = build_model_table(ivs =  c('covid','christmas','trend'))
+
+ivs =  c('covid','christmas','trend')
+
+model_table = build_model_table(ivs =  ivs)
 
 model_table %>%
   datatable(rownames = NULL,
@@ -308,11 +359,14 @@ model_table %>%
                            dom = "t"))
 ```
 
-The model table can be used as an input in the `linea::run_model()` function. The `linea::response_curves()` function will display the non-linear relationship capture by the model.
+The model table can be used as an input in the `linea::run_model()` function. The `linea::response_curves()` function will display the non-linear relationship captured by the model.
 
 ```{r, warning=F, message=FALSE}
+
+dv = 'ecommerce'
+
 model = run_model(data = data,
-                  dv = 'ecommerce',
+                  dv = dv,
                   model_table = model_table)
 
 model %>% 
@@ -327,27 +381,81 @@ model %>%
 <br>
 <hr>
 
-### Advanced Testing
+### Custom Transformations
 
-#### Unused Variables
+The default transformations cover an extensive range of non-linear relationships, but `linea` allows users to input their own transformations through the `trans_df`. The `trans_df` is effectively a table mapping functions, expressed in R, to their name, and order of execution. In the example below, the function `x^a` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
 
-The function `linea::what_next()` can be used to run a model for each of the unused variables in the data. The function will run the current model specification with the additional unused variable. This will return a `data.frame` containing the statistics of each model run. 
 
 ```{r, warning=F, message=FALSE}
-model %>% 
-  what_next() %>% 
+
+trans_df = data.frame(
+  name = c('hill', 'decay', 'lag', 'ma','custom_1'),
+  func = c(
+    'linea::hill_function(x,a,b,c)',
+    'linea::decay(x,a)',
+    'linea::lag(x,a)',
+    'linea::ma(x,a)',
+    'x^a'
+  ),
+  order = 1:5
+)
+
+
+trans_df %>% 
   datatable(rownames = NULL)
+
 ```
+
+This `trans_df` can now be used to generate a model table and run models.
+
+```{r, warning=F, message=FALSE}
+
+model_table = build_model_table(ivs = ivs,
+                                trans_df = trans_df) %>% 
+  mutate(custom_1 = if_else(variable == 'christmas','2',''))
+
+model_table %>% 
+  datatable(rownames = NULL)
+
+```
+
+```{r, warning=F, message=FALSE}
+
+
+model = run_model(data = data,
+                  dv = dv,
+                  model_table = model_table,
+                  trans_df = trans_df)
+
+model %>% 
+  response_curves(
+    x_min = 0,
+    x_max = 30,
+    y_min = 0,
+    y_max = 20000,
+    interval = 0.01
+    )
+
+```
+
+
+
+### Advanced Testing
+
+Similarly to the `linea::what_next()` function, described in the [Additional Features](linea_additional_features.html) page, `linea` has functions to run multiple models from specified combinations of variables and transformations:
+
+* `what_trans()`
+* `what_combo()`
 
 #### Parameter Tuning
 
-Similarly, to find the right parameters for the non-linear relationship, the function `linea::what_trans()` can be used to run multiple models with a range of parameters. If parameters are passed for multiple transformations, the function will run models for all combinations. The inputs for this function are:
+To find the right parameters for the non-linear relationship, the function `linea::what_trans()` can be used to run multiple models with a range of parameters. If parameters are passed for multiple transformations, the function will run models for all combinations. The inputs for this function are:
 
-* the starting model
-* a variable name, present in the data
-* a table (i.e. trans_df) specifying the values of the parameters
+* a starting model
+* a variable name from the data
+* a table (i.e. `trans_df`) specifying the values of the parameters
 
-The trans_df can be built as follows:
+In this case, the `trans_df` can must contain the parameters to be tested for each transformations, separated by a comma:
 
 ```{r, warning=F, message=FALSE}
 
@@ -359,12 +467,9 @@ trans_df = data.frame(
     'linea::lag(x,a)',
     'linea::ma(x,a)'
   ),
-  order = 1:4
-) %>%
-  dplyr::mutate(val = '') %>%
-  dplyr::mutate(val = dplyr::if_else(condition = name == 'diminish',
-                                     '0.5,1,10,100,1000',
-                                     val))
+  order = 1:4,
+  val = c('0.5,10,100,1000,10000','0,0.5,0.8','','')
+)
 
 
 trans_df %>% 
@@ -372,11 +477,69 @@ trans_df %>%
 
 ```
 
+Once the `trans_df` is ready, it can be passed to the `linea::what_trans()` function, to return the table of results of all combinations.
+
 ```{r, warning=F, message=FALSE}
 model %>% 
   what_trans(trans_df = trans_df,
              variable ='offline_media') %>% 
   datatable(rownames = NULL)
+```
+
+
+#### All Combinations
+
+When modelling, testing one variable at the time can be time consuming and inconclusive. For this reason it is useful to be able to test wider ranges of models that span across different variables and transformations. 
+
+Using a simliar set of transformations as before, here we need to specify the possible parameter values for each function, for each variable.
+
+```{r, warning=F, message=FALSE}
+
+trans_df = data.frame(
+ name = c('diminish', 'decay', 'hill', 'exp'),
+ func = c(
+   'linea::diminish(x,a)',
+   'linea::decay(x,a)',
+   "linea::hill_function(x,a,b,c)",
+   '(x^a)'
+ ),
+ order = 1:4
+) %>%
+ dplyr::mutate(offline_media = dplyr::if_else(condition = name == 'hill',
+                                              '(1,50),(1),(1,100)',
+                                              '')) %>%
+ dplyr::mutate(online_media = dplyr::if_else(condition = name == 'decay',
+                                             '.1,.7 ',
+                                             '')) %>%
+ dplyr::mutate(promo = '')
+
+
+trans_df %>% 
+  datatable(rownames = NULL)
+
+```
+
+We can now use that to test the specified combinations with `linea::what_combo`. 
+Due to the complexity of the combinations, across transformations, parameters, and variables, the results are stored in a list of data frames.
+
+```{r, warning=F, message=FALSE}
+
+combinations = what_combo(model = model,trans_df = trans_df)
+
+names(combinations)
+
+```
+
+```{r, warning=F, message=FALSE}
+
+combinations$results %>% 
+  datatable(rownames = NULL)
+```
+
+```{r, warning=F, message=FALSE}
+
+combinations$trans_parameters
+
 ```
 
 ## Next Steps

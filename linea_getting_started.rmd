@@ -82,12 +82,13 @@ library(DT) # visualization
 
 The function `linea::read_xcsv()` can be used to read csv or excel files.
 ```{r, warning=F,message=FALSE}
-# data_path = 'c:/Users/44751/Desktop/github/data/ecomm_data.csv'
+
 data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.csv'
 data = read_xcsv(file = data_path)
 data %>%
   datatable(rownames = NULL,
             options = list(scrollX = TRUE))
+
 ```
 
 
