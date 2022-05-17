@@ -66,6 +66,16 @@ tr{
     margin-top: 15px;
 }
 
+.nav{
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.nav a{
+  margin: 0 20px;
+}
+
 .footer_toc {
     display: block;
     width: 100%;
@@ -123,25 +133,24 @@ footer span{
   visibility: visible;
 }
 
+.github_home,
 .github{
   display: block;
   position: absolute;
   top: 45px;
-  left: 10%;
   text-align: center;
-  width: 55px;
-  background-color: rgba(44, 62, 80, 0.5);
-}
-.github_home{
-  display: block;
-  position: absolute;
-  top: 45px;
-  left: 25%;
-  text-align: center;
-  width: 65px;
-  padding: 10px;
   background-color: rgba(44, 62, 80, 0.5);
   color: white;
+}
+
+.github{
+  left: 10%;
+  width: 55px;
+}
+.github_home{
+  padding: 10px;
+  left: 25%;
+  width: 65px;
 }
 
 
@@ -271,8 +280,7 @@ input:checked + .slider:before {
 
   .second_logo{
     position: absolute !important;
-    top: -300px !important;
-    left: inherit !important;
+    top: -240px !important;
     margin-left: inherit !important;
     text-align: center !important;
     width: 90% !important;

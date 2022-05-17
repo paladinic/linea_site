@@ -12,12 +12,9 @@ output:
 
 ---
 
-<div class='nav'>
-  <a href='index.html'>Home</a>|
-  <a href='linea_getting_started.html'>Getting Started</a>|
-  <a href='linea_additional_features.html'>Additional Features</a>|
-  <a href='linea_advanced_features.html'>Advanced Features</a>
-</div>
+<div class='nav'><a href='index.html'>Home</a><a href='linea_getting_started.html'>Getting Started</a><a href='linea_additional_features.html'>Additional Features</a><a href='linea_advanced_features.html'>Advanced Features</a></div>
+
+<hr>
 
 
 
@@ -39,12 +36,12 @@ knitr::opts_chunk$set(class.source = "code_style")
 
 <!--HEADER STUFF-->
 <div class='dark_mode'>
-  <strong>Dark Mode</strong>
-  <br>
   <label class="switch">
     <input type="checkbox" value="dark_mode" id="dark_mode">
     <span class="slider round"></span>    
   </label>
+  <br>
+  <strong>Dark Mode</strong>
 </div>
 
 <a class='github' href='https://github.com/paladinic/linea'>

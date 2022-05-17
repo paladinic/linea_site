@@ -12,21 +12,19 @@ output:
 
 ---
 
-<div class='nav'>
-  <a href='index.html'>Home</a>|
-  <a href='linea_getting_started.html'>Getting Started</a>|
-  <a href='linea_additional_features.html'>Additional Features</a>|
-  <a href='linea_advanced_features.html'>Advanced Features</a>
-</div>
+<div class='nav'><a href='index.html'>Home</a><a href='linea_getting_started.html'>Getting Started</a><a href='linea_additional_features.html'>Additional Features</a><a href='linea_advanced_features.html'>Advanced Features</a></div>
+
+<hr>
 
 
 
-## Setup
-  <br>
+<div class='dark_mode'>
   <label class="switch">
     <input type="checkbox" value="dark_mode" id="dark_mode">
     <span class="slider round"></span>    
   </label>
+  <br>
+  <strong>Dark Mode</strong>
 </div>
 
 <a class='github' href='https://github.com/paladinic/linea'>
@@ -37,6 +35,9 @@ output:
 <span class='logo_span second_logo'>LINEA</span>
 
 <!--CONTENT-->
+
+## Advanced Features
+
 <span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
 
 Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. Marketing, Finance). 
@@ -49,7 +50,6 @@ This page covers a basic implementation of the `linea` library to analyse a time
 
 We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
 
-## Advanced Features
 ### Non-linear Transformations
 
 `linea` provides a few default *transformations*. These are mathematical functions meant to capture non linear relationships in the data. These functions are embedded in the library but are also available for use.
