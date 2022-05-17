@@ -383,7 +383,7 @@ model %>%
 
 ### Custom Transformations
 
-The default transformations cover an extensive range of non-linear relationships, but `linea` allows users to input their own transformations through the `trans_df`. The `trans_df` is effectively a table mapping functions, expressed in R, to their name, and order of execution. In the example below, the function `x^a` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
+The default transformations cover an extensive range of non-linear relationships, but `linea` allows users to input their own transformations through the `trans_df`. The `trans_df` is effectively a table mapping functions, expressed in R, to their name, and order of execution. In the example below, the function `sin(x*a)` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
 
 
 ```{r, warning=F, message=FALSE}
@@ -395,7 +395,7 @@ trans_df = data.frame(
     'linea::decay(x,a)',
     'linea::lag(x,a)',
     'linea::ma(x,a)',
-    'x^a'
+    'sin(x*a)'
   ),
   order = 1:5
 )
@@ -412,7 +412,7 @@ This `trans_df` can now be used to generate a model table and run models.
 
 model_table = build_model_table(ivs = ivs,
                                 trans_df = trans_df) %>% 
-  mutate(custom_1 = if_else(variable == 'christmas','2',''))
+  mutate(custom_1 = if_else(variable == 'christmas','0.5',''))
 
 model_table %>% 
   datatable(rownames = NULL)
@@ -431,7 +431,7 @@ model %>%
   response_curves(
     x_min = 0,
     x_max = 30,
-    y_min = 0,
+    y_min = -20000,
     y_max = 20000,
     interval = 0.01
     )
