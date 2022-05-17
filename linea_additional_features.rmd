@@ -419,17 +419,26 @@ data %>%
             options = list(scrollX = TRUE))
 ```
 
+
+To run a pooled model we must create a meta_data `data.frame` which maps variables to be used in the pooling as either 'POOL' for the categorical variable (i.e. `country`) and 'STA' for the variables to be normalized by the pooling. To enforce the normalization the `normalise_by_pool` parameter of the `linea::run_model()` function must be set to `TRUE`, 
+
 ```{r, warning=F, message=FALSE}
 
 dv = 'amazon'
 ivs = c('christmas','rakhi','diwali')
 id_var = 'Week'
 
+meta_data = tibble(
+  variable = c("amazon", "rakhi", "country"),
+  meta = c("STA", "STA", "POOL")
+)
+
 model = run_model(data = data,
                   dv = dv,
                   ivs = ivs,
                   id_var = id_var,
-                  normalise_by_pool = T)
+                  meta_data = meta_data,
+                  normalise_by_pool = TRUE)
 
 model %>% 
   decomp_chart()
@@ -446,23 +455,16 @@ model %>%
 
 ```{r, warning=F, message=FALSE}
 model %>% 
-  fit_chart(pool = 'India') 
+  decomp_chart(pool = 'India') 
 
 ```
 
-```{r, warning=F, message=FALSE}
-model %>% 
-  response_curves() 
-
-```
 
 ## Next Steps
 
-1. The <a href="linea_getting_started.html">Getting Started</a> page is a good place to start learning how to build linear models with `linea`.
+1. The <a href="linea_getting_started.html">Getting Started</a> page is a good place to start learning how to build basic linear models with `linea`.
 
 2. The <a href="linea_advanced_features.html">Advanced Features</a> page shows how to implement the features of `linea` that allow users to capture <b>non-linear relationships</b>.
-
-3. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
 
 
 <footer class="footer_toc">
