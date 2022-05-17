@@ -50,7 +50,7 @@ knitr::opts_chunk$set(class.source = "code_style")
 </a>
 
 <!--CONTENT-->
-<span class='logo_span'>LINEA</span> is an R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+<span class='logo_span'>LINEA</span> is an open-source R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
 
 Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. marketing, finance). 
 
@@ -97,6 +97,30 @@ The `linea` library works well with pipes. Used with dplyr and plotly, it can pe
 
 3. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
 
+<br>
+<hr>
+<br>
+
+## Coming Soon...
+
+<span class='logo_span'>LINEA</span> is being continuously maintained and improved with several features under development. 
+
+Here are a few improvements in development:
+
+* `linea::what_combo()`
+* pooled modelling interface (i.e. meta_data)
+
+Here are a few features on the way:
+
+* Offset / Fixed coefficients
+* VIF
+* Model Nesting
+* Bayesian Modelling
+
+There are also commercial products being developed:
+
+* Modelling Tool: <span class='logo_span'>LINEAPP</span>
+* Optimization, Forecasting and Planning: <span class='logo_span'>LINEAPP+</span>
 
 <footer class="footer_home">
   <span>
