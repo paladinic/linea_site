@@ -61,7 +61,7 @@ tr{
 .second_logo{
     position: fixed !important;
     top: 0px !important;
-    left: 4% !important;
+    margin-left: -310px !important;
     font-size: 2em;
     margin-top: 15px;
 }
@@ -273,6 +273,7 @@ input:checked + .slider:before {
     position: absolute !important;
     top: -300px !important;
     left: inherit !important;
+    margin-left: inherit !important;
     text-align: center !important;
     width: 90% !important;
   }
