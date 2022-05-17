@@ -60,6 +60,7 @@ This page covers a basic implementation of the `linea` library to analyse a time
 
 * [Non-linear Transformations](#Non-linear Transformations): What
 * [Non-linear Models](#Non-linear Models): Importing data for this example.
+* [Custom Transformations](#Custom Transformations): Extending the default transformations.
 * [Advanced Testing](#Advanced Testing): Running multiple models to quickly test different transformations.
 
 We will run a simple model on some fictitious data sourced from Google trends to understand what variables seem to have an impact on the `ecommerce` variable.
