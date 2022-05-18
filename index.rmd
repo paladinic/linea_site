@@ -56,8 +56,9 @@ Linear models are commonly used in a variety of contexts including natural and s
 
 This page covers a basic how to setup the `linea` library to analyse a time-series. We'll cover:
 
-* [Installation](#Installation): Installing and checking the library.
-* [Data Ingestion](#Data Ingestion): Importing data for this example.
+* [Prerequisites](#Prerequisites): Prerequisites of using the library
+* [Installation](#Installation): Installing and checking the library
+* [Quick Start](#Quick Start): What `linea` can do
 
 <br>
 <hr>
@@ -83,11 +84,114 @@ Once installed you can check the installation.
 print(packageVersion("linea"))
 ```
 
-The `linea` library works well with pipes. Used with dplyr and plotly, it can perform data analysis and visualisation with elegant code.
+<br>
+<hr>
+<br>
+
+## Quick Start
+
+The `linea` library works well with pipes. Used with dplyr and plotly, it can perform data analysis and visualization with elegant code.
+Let's build a quick model to illustrate what `linea` can do.
+
+
+### Import Data
+
+We start by importing `linea`, some other useful libraries, and some data.
+
+```{r, warning=F,message=FALSE}
+
+# librarise
+library(linea) # modelling
+library(tidyverse) # data manipulation
+library(plotly) # visualization
+library(DT) # visualization
+
+# fictitious ecommerce data
+data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.csv'
+
+# importing flat file
+data = read_xcsv(file = data_path)
+
+# adding seasonality and Google trends variables
+data = data %>% 
+  get_seasonality(date_col_name = 'date',date_type = 'weekly starting') %>%
+  gt_f(kw = 'prime day',append = T)
+
+# visualize data
+data %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = TRUE))
+
+```
+
+### Run Models
+
+Now lets build a model to understand what drives changes in the `ecommerce` variable.
+We can start by selecting a few initial independent variables (i.e. `christmas`,`black.friday`,`trend`,`gtrends_prime day`)
+
+```{r, warning=F,message=FALSE}
+
+model = run_model(data = data,
+                  dv = 'ecommerce',
+                  ivs = c('christmas','black.friday','trend','gtrends_prime day'),
+                  id_var = 'date')
+
+summary(model)
+
+```
+
+Our next steps can be guided by functions like `what_next()`, which will test all other variables in our data.
+From the output below, it seems like the variables `covid` and `offline_media` would improve the model most.
+
+```{r, warning=F,message=FALSE}
+
+model %>% 
+  what_next()
+
+```
+
+Adding these variables to model brings the adjusted R squared to ~88%.
+
+```{r, warning=F,message=FALSE}
+
+model = run_model(data = data,
+                  dv = 'ecommerce',
+                  ivs = c('christmas','black.friday','trend','gtrends_prime day','covid','offline_media'),
+                  id_var = 'date')
+
+summary(model)
+
+```
+
+
+### Generate Insights
+
+Now that we have a decent model we can start extracting insights from it.
+We can start by looking at the contribution of each independent variable over time.
+
+```{r, warning=F,message=FALSE}
+
+model %>% 
+  decomp_chart()
+
+
+```
+
+We can also visualize the relationships between our independent and dependent variables using response curves.
+From this we can see that, for example, when `offline_media` is 10, `ecommerce` increases by ~55. 
+
+```{r, warning=F,message=FALSE}
+
+model %>% 
+  response_curves(x_min = 0)
+
+
+```
 
 <br>
 <hr>
 <br>
+
 
 ## Next Steps
 
@@ -107,8 +211,9 @@ The `linea` library works well with pipes. Used with dplyr and plotly, it can pe
 
 Here are a few improvements in development:
 
-* `linea::what_combo()`
-* pooled modelling interface (i.e. meta_data)
+* improving the pooled modelling interface (i.e. meta_data)
+* optimizing `linea::what_combo()`
+* expanding `linea::hill_function()`
 
 Here are a few features on the way:
 

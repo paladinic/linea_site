@@ -219,9 +219,9 @@ $$\ b - \frac{b*k^m}{k^m + v^m}$$
 plot_ly() %>%
   add_lines(y = raw_variable, x = dates, name = 'raw') %>%
   add_lines(
-    y = hill_function(raw_variable, m = 5,k = 25),
+    y = hill_function(raw_variable, m = 5,k = 50),
     x = dates,
-    name = 'transformed: hill_function m = 5,k = 25',
+    name = 'transformed: hill_function m = 5,k = 50',
     yaxis = "y2"
   ) %>%
   layout(title = 'diminish',
@@ -241,9 +241,45 @@ This transformation can also be visualized by placing the raw and transformed va
 plot_ly() %>% 
   add_trace(
       x = raw_variable,
-      y = hill_function(raw_variable,m = 5,k = 25)
+      y = hill_function(raw_variable,m = 1,k = 50),
+      name = 'm = 1,k = 50'
     ) %>% 
-  layout(title = 'raw vs. hill_function m = 5,k = 25', 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 2,k = 50),
+      name = 'm = 2,k = 50'
+    ) %>% 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 5,k = 50),
+      name = 'm = 5,k = 50'
+    ) %>% 
+  layout(title = 'raw vs. hill_function (m)', 
+         xaxis = list(showgrid = F),
+         plot_bgcolor  = "rgba(0, 0, 0, 0)",
+         paper_bgcolor = "rgba(0, 0, 0, 0)")
+
+```
+
+```{r, warning=F, message=FALSE}
+
+plot_ly() %>% 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 5,k = 10),
+      name = 'm = 5,k = 10'
+    ) %>% 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 5,k = 50),
+      name = 'm = 5,k = 50'
+    ) %>% 
+  add_trace(
+      x = raw_variable,
+      y = hill_function(raw_variable,m = 5,k = 100),
+      name = 'm = 5,k = 100'
+    ) %>% 
+  layout(title = 'raw vs. hill_function (k)', 
          xaxis = list(showgrid = F),
          plot_bgcolor  = "rgba(0, 0, 0, 0)",
          paper_bgcolor = "rgba(0, 0, 0, 0)")

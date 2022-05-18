@@ -111,6 +111,6 @@ window.onload=function(){
     e.preventDefault();
     $('html, body').animate({scrollTop:0}, '300');
   });
-  document.querySelector('input[value="dark_mode"]').click()
+  // document.querySelector('input[value="dark_mode"]').click()
 
 }
