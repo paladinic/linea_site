@@ -54,7 +54,7 @@ knitr::opts_chunk$set(class.source = "code_style")
 
 * [Categories](#Categories): Aggregate and visualize your variables
 * [Seasonality](#Seasonality): Automatically generate seasonality variables
-* [Testing](#Testing): Running multiple models to quickly test different variables.
+* [Testing](#Testing): Running multiple models to quickly test different variables
 * [GTrends](#GTrends): Import Google trends data
 * [Pools](#Pools): Build models with panel data
 

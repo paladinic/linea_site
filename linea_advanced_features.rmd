@@ -54,9 +54,9 @@ knitr::opts_chunk$set(class.source = "code_style")
 ## Advanced Features
 
 One of <span class='logo_span'>LINEA</span>'s main advantages is the simplicity with which it can capture non-linear relations. 
-Capturing non-linear relations is fundamental in when applying regression as these are more realistic representations of the real world.
+Capturing non-linear relations is fundamental when applying regression as these relationships are more realistic representations of the real world.
 
-This page covers a basic implementation of the `linea` library to analyse a time-series. We'll cover:
+This page covers:
 
 * [Non-linear Transformations](#Non-linear Transformations): `linea`'s default transformations
 * [Non-linear Models](#Non-linear Models): How linear models capture non-linear transformations
@@ -182,31 +182,19 @@ plot_ly() %>%
       line = list(shape = "spline")
     ) %>% 
   add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
       y = diminish(raw_variable,.75,F),
-      name = 'diminish 75%',
-      line = list(shape = "spline")
+      name = 'diminish 75%'
     ) %>% 
   layout(title = 'raw vs. diminished', 
-         xaxis = list(showgrid = F),
+         yaxis = list(title = 'diminished'),
+         xaxis = list(showgrid = F,title = 'raw'),
          plot_bgcolor  = "rgba(0, 0, 0, 0)",
          paper_bgcolor = "rgba(0, 0, 0, 0)")
 
 ```
 
-```{r, warning=F, message=FALSE}
-
-plot_ly() %>% 
-  add_trace(
-      x = raw_variable,
-      y = diminish(raw_variable,.5,F)
-    ) %>% 
-  layout(title = 'raw vs. diminished (m = 10%)', 
-         xaxis = list(showgrid = F),
-         plot_bgcolor  = "rgba(0, 0, 0, 0)",
-         paper_bgcolor = "rgba(0, 0, 0, 0)")
-
-```
 
 #### Hill
 
@@ -235,27 +223,31 @@ plot_ly() %>%
 ```
 <br>
 <hr>
-This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. 
+This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. The charts below also illustrate the impact of changing the functions parameters.
 ```{r, warning=F, message=FALSE}
 
 plot_ly() %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
       y = hill_function(raw_variable,m = 1,k = 50),
       name = 'm = 1,k = 50'
     ) %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
       y = hill_function(raw_variable,m = 2,k = 50),
       name = 'm = 2,k = 50'
     ) %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
       y = hill_function(raw_variable,m = 5,k = 50),
       name = 'm = 5,k = 50'
     ) %>% 
   layout(title = 'raw vs. hill_function (m)', 
-         xaxis = list(showgrid = F),
+         yaxis = list(title = 'diminished'),
+         xaxis = list(showgrid = F,title = 'raw'),
          plot_bgcolor  = "rgba(0, 0, 0, 0)",
          paper_bgcolor = "rgba(0, 0, 0, 0)")
 
@@ -264,20 +256,23 @@ plot_ly() %>%
 ```{r, warning=F, message=FALSE}
 
 plot_ly() %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
-      y = hill_function(raw_variable,m = 5,k = 10),
-      name = 'm = 5,k = 10'
+      y = hill_function(raw_variable,m = 5,k = 25),
+      name = 'm = 5,k = 25'
     ) %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
       y = hill_function(raw_variable,m = 5,k = 50),
       name = 'm = 5,k = 50'
     ) %>% 
-  add_trace(
+  add_lines(
+      line = list(shape = "spline"),
       x = raw_variable,
-      y = hill_function(raw_variable,m = 5,k = 100),
-      name = 'm = 5,k = 100'
+      y = hill_function(raw_variable,m = 5,k = 75),
+      name = 'm = 5,k = 75'
     ) %>% 
   layout(title = 'raw vs. hill_function (k)', 
          xaxis = list(showgrid = F),
@@ -383,7 +378,7 @@ model_table %>%
                            dom = "t"))
 ```
 
-The model table can be written as a CSV or Excel and modified outside of R, or using dplyr as shown below. In this example the model run will apply the `linea::dim_rets()` function (with a parameter of 0.5, to the "covid" variable. 
+The model table can be written as a CSV or Excel and modified outside of R, or using dplyr as shown below. In this example the model run will apply the `linea::diminish()` function (with a parameter of 0.5, to the "covid" variable. 
 
 ```{r, warning=F, message=FALSE}
 model_table = model_table %>%
@@ -420,26 +415,31 @@ model %>%
 
 ### Custom Transformations
 
-The default transformations cover an extensive range of non-linear relationships, but `linea` allows users to input their own transformations through the `trans_df`. The `trans_df` is effectively a table mapping functions, expressed in R, to their name, and order of execution. In the example below, the function `sin(x*a)` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
+The default transformations cover an extensive range of non-linear relationships, but `linea` allows users to input their own transformations through the `trans_df`. The `trans_df` is effectively a table mapping functions, expressed in R, to their name, and order of execution. 
+
+```{r, warning=F, message=FALSE}
+
+trans_df = default_trans_df()
+
+trans_df %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = T,
+                           dom = "t"))
+
+```
+
+In the example below, the function `sin(x*a)` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
 
 
 ```{r, warning=F, message=FALSE}
 
-trans_df = data.frame(
-  name = c('hill', 'decay', 'lag', 'ma','custom_1'),
-  func = c(
-    'linea::hill_function(x,a,b,c)',
-    'linea::decay(x,a)',
-    'linea::lag(x,a)',
-    'linea::ma(x,a)',
-    'sin(x*a)'
-  ),
-  order = 1:5
-)
+trans_df = trans_df %>% 
+  rbind(c('custom_1','sin(x*a)',5))
 
-
-trans_df %>% 
-  datatable(rownames = NULL)
+trans_df %>%
+  datatable(rownames = NULL,
+            options = list(scrollX = T,
+                           dom = "t"))
 
 ```
 
@@ -583,7 +583,7 @@ combinations$trans_parameters
 
 1. The <a href="linea_getting_started.html">Getting Started</a> page is a good place to start learning how to build linear models with `linea`.
 
-2. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
+2. The <a href="linea_additional_features.html">Additional Features</a> page illustrates all other functions of the library.
 
 
 

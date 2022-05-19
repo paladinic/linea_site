@@ -178,7 +178,7 @@ model %>%
 ```
 
 We can also visualize the relationships between our independent and dependent variables using response curves.
-From this we can see that, for example, when `offline_media` is 10, `ecommerce` increases by ~55. 
+From this we can see that, for example, when `offline_media` is 10, `ecommerce` increases by ~55. To capture non-linear relationships (i.e. response curves that aren't straight lines) see the <a href="linea_advanced_features.html">Advanced Features</a> page.
 
 ```{r, warning=F,message=FALSE}
 
@@ -199,7 +199,7 @@ model %>%
 
 2. The <a href="linea_advanced_features.html">Advanced Features</a> page shows how to implement the features of `linea` that allow users to capture <b>non-linear relationships</b>.
 
-3. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
+3. The <a href="linea_additional_features.html">Additional Features</a> illustrates page all other functions of the library.
 
 <br>
 <hr>
@@ -222,14 +222,14 @@ A few improvements on the way:
 * optimizing `linea::what_combo()`
 * expanding `linea::hill_function()`
 
-Here are a few features in development:
+A few features in development:
 
 * Offset / Fixed coefficients
 * VIF
 * Model Nesting
 * Bayesian Modelling
 
-Other
+Other developments:
 
 * Python implementation of <span class='logo_span'>LINEA</span>
 

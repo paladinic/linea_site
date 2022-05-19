@@ -65,7 +65,7 @@ This page covers a basic implementation of the `linea` library to analyse a time
 
 We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
 
-we start by importing `linea` and some other useful libraries.
+we start by importing `linea` and some other useful libraries. Visit <a href="index.html">this page</a>  for guidance on installation.
 
 ```{r, warning=F,message=FALSE}
 
@@ -114,10 +114,10 @@ summary(model)
 
 ### Visualisation
 
-Models can be inspected visually using the `linea::decomping()` function. Some of the function's arguments are:
+Models can be inspected visually using the `linea::decomping()` function. The model object will automatically run this function under the hood, but it is important to understand what is going on. Some of the function's arguments are:
 
 * **model:** the model (lm) object
-* **id_var:** the name of the id variable (i.e. "date"; optional)
+* **id_var:** the name of the id variable (e.g. "date", "sample id", "customer id"; optional)
 * **raw_data:** the data containing modeled and id variable (optional)
 
 
@@ -217,7 +217,7 @@ model %>%
 
 1. The <a href="linea_advanced_features.html">Advanced Features</a> page shows how to implement the features of `linea` that allow users to capture <b>non-linear relationships</b>.
 
-2. The <a href="linea_additional_features.html">Additional Features</a> page all other functions of the library.
+2. The <a href="linea_additional_features.html">Additional Features</a> page illustrates all other functions of the library.
 
 
 <br>
