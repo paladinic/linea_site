@@ -230,6 +230,7 @@ Here are a few features in development:
 * Bayesian Modelling
 
 Other
+
 * Python implementation of <span class='logo_span'>LINEA</span>
 
 
