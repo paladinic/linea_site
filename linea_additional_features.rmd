@@ -16,18 +16,6 @@ output:
 
 <hr>
 
-we start by importing `linea` and some other useful libraries.
-
-```{r, warning=F,message=FALSE}
-
-library(linea) # modelling
-library(tidyverse) # data manipulation
-library(plotly) # visualization
-library(DT) # visualization
-
-```
-
-
 ## Additional Features
 
 <!--HEAD STUFF-->
@@ -72,7 +60,7 @@ knitr::opts_chunk$set(class.source = "code_style")
 
 We will run simple models on some fictitious data sourced from Google trends. The aim of this exercise will be to demonstrate the use of the features above.
 
-we start by importing `linea` and some other useful libraries.
+We start by importing `linea` and some other useful libraries.
 
 ```{r, warning=F,message=FALSE}
 
@@ -82,6 +70,7 @@ library(plotly) # visualization
 library(DT) # visualization
 
 ```
+
 
 ### Categories
 

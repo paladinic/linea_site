@@ -207,25 +207,31 @@ model %>%
 
 ## Coming Soon...
 
-<span class='logo_span'>LINEA</span> is being continuously maintained and improved with several features under development. 
+<span class='logo_span'>LINEA</span> is being continuously maintained and improved with several features and products under development. 
 
-Here are a few improvements in development:
+The commercial products being developed:
+
+* Custom Tool Development: <span class='logo_span'>LINEAPPS</span>
+* Modelling Tool: <span class='logo_span'>LINEAPP</span>
+* Optimization, Forecasting and Planning: <span class='logo_span'>LINEAPP+</span>
+
+
+A few improvements on the way:
 
 * improving the pooled modelling interface (i.e. meta_data)
 * optimizing `linea::what_combo()`
 * expanding `linea::hill_function()`
 
-Here are a few features on the way:
+Here are a few features in development:
 
 * Offset / Fixed coefficients
 * VIF
 * Model Nesting
 * Bayesian Modelling
 
-There are also commercial products being developed:
+Other
+* Python implementation of <span class='logo_span'>LINEA</span>
 
-* Modelling Tool: <span class='logo_span'>LINEAPP</span>
-* Optimization, Forecasting and Planning: <span class='logo_span'>LINEAPP+</span>
 
 <footer class="footer_home">
   <span>
