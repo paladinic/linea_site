@@ -61,8 +61,7 @@ This page covers a basic implementation of the `linea` library to analyse a time
 
 * [Data Ingestion](#Data Ingestion): Importing data for this example
 * [First Model](#First Model): Running a basic model
-* [Visualisation](#Visualisation): Visualizing a model's output 
-* [Additional Features](#Additional Features): Other key features of the library
+* [Visualisation](#Visualisation): Visualizing a model's output
 
 We will run a simple model on some fictitious data sourced from Google trends. The aim of this exercise will be understand what variables seem to have an impact on the `ecommerce` variable.
 
