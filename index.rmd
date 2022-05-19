@@ -2,6 +2,8 @@
 title: "LINEA"
 output:
   html_document:
+    includes:
+      in_header: "favicon.html" 
     toc: false
     toc_float:
       toc_collapsed: false
@@ -23,7 +25,6 @@ output:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;400;600;800&family=Roboto:wght@300&display=swap" rel="stylesheet">
-
 <script language="JavaScript" src="script.js"></script>
 
 <a id="back_to_top">&#8593;</a>
@@ -50,9 +51,9 @@ knitr::opts_chunk$set(class.source = "code_style")
 </a>
 
 <!--CONTENT-->
-<span class='logo_span'>LINEA</span> is an open-source R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables. 
+<span class='logo_span'>LINEA</span> is an open-source R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables.
 
-Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. marketing, finance). 
+Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. marketing, finance).
 
 This page covers a basic how to setup the `linea` library to analyse a time-series. We'll cover:
 
@@ -113,7 +114,7 @@ data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.cs
 data = read_xcsv(file = data_path)
 
 # adding seasonality and Google trends variables
-data = data %>% 
+data = data %>%
   get_seasonality(date_col_name = 'date',date_type = 'weekly starting') %>%
   gt_f(kw = 'prime day',append = T)
 
@@ -145,7 +146,7 @@ From the output below, it seems like the variables `covid` and `offline_media` w
 
 ```{r, warning=F,message=FALSE}
 
-model %>% 
+model %>%
   what_next()
 
 ```
@@ -171,7 +172,7 @@ We can start by looking at the contribution of each independent variable over ti
 
 ```{r, warning=F,message=FALSE}
 
-model %>% 
+model %>%
   decomp_chart()
 
 
@@ -182,7 +183,7 @@ From this we can see that, for example, when `offline_media` is 10, `ecommerce` 
 
 ```{r, warning=F,message=FALSE}
 
-model %>% 
+model %>%
   response_curves(x_min = 0)
 
 
@@ -207,7 +208,7 @@ model %>%
 
 ## Coming Soon...
 
-<span class='logo_span'>LINEA</span> is being continuously maintained and improved with several features and products under development. 
+<span class='logo_span'>LINEA</span> is being continuously maintained and improved with several features and products under development.
 
 The commercial products being developed:
 
