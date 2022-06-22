@@ -202,7 +202,7 @@ plot_ly() %>%
 
 The `linea::hill_function()` function applies a similar transformation to `linea::diminish()` as it captures diminishing returns. The function requires for more inputs though, and allows to generate a s-curve.
 
-$$\ b - \frac{b*k^m}{k^m + v^m}$$
+$$\ 1 - \frac{k^m}{k^m + v^m}$$
 
 ```{r, warning=F, message=FALSE}
 
@@ -225,7 +225,7 @@ plot_ly() %>%
 ```
 <br>
 <hr>
-This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. The charts below also illustrate the impact of changing the functions parameters.
+This transformation can also be visualized by placing the raw and transformed variable on the horizontal and vertical axis. The charts below also illustrate the impact of changing the functions parameters: `k` and `m`.
 ```{r, warning=F, message=FALSE}
 
 plot_ly() %>% 
@@ -384,7 +384,7 @@ The model table can be written as a CSV or Excel and modified outside of R, or u
 
 ```{r, warning=F, message=FALSE}
 model_table = model_table %>%
-  mutate(diminish = if_else(variable ==  'covid','10',diminish)) %>% 
+  mutate(hill = if_else(variable ==  'covid','10,1',hill)) %>% 
   mutate(decay = if_else(variable ==  'covid','.5',decay))
 
 model_table %>%

@@ -207,7 +207,7 @@ Using the `linea::response_curves()` function we can visualize the relationship 
 
 ```{r, warning=F, message=FALSE}
 model %>%
-  response_curves()
+  response_curves(interval = 0.1)
 ```
 
 
