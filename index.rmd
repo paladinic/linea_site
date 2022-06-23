@@ -51,7 +51,7 @@ knitr::opts_chunk$set(class.source = "code_style")
 </a>
 
 <!--CONTENT-->
-<span class='logo_span'>LINEA</span> is an open-source R library aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables.
+<span class='logo_span'>LINEA</span> is an open-source [R library](https://cran.r-project.org/web/packages/linea/index.html) aimed at simplifying and accelerating the development of linear models to understand the relationship between two or more variables.
 
 Linear models are commonly used in a variety of contexts including natural and social sciences, and various business applications (e.g. marketing, finance).
 
