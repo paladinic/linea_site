@@ -271,10 +271,10 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-@media (max-width:700px) {
+@media (max-width:750px) {
 
   .title{
-    font-size: 2.5em !important;
+    font-size: 2.25em !important;
     padding: 30px;
   }
 

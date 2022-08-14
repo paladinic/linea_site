@@ -436,7 +436,7 @@ In the example below, the function `sin(x*a)` is added to the default transforma
 ```{r, warning=F, message=FALSE}
 
 trans_df = trans_df %>% 
-  rbind(c('custom_1','sin(x*a)',5))
+  rbind(c('custom_1',FALSE,'sin(x*a)',5))
 
 trans_df %>%
   datatable(rownames = NULL,
