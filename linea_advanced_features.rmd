@@ -407,9 +407,11 @@ model = run_model(data = data,
 
 model %>% 
   response_curves(
-    x_max = 5e5,
+    x_max = 1e5,
     x_min = 0,
-    y_max = 5e5
+    y_max = 1e5,
+    y_min = -1e5,
+    interval = 1
     )
 ```
 <br>
@@ -430,13 +432,12 @@ trans_df %>%
 
 ```
 
-In the example below, the function `sin(x*a)` is added to the default transformations as `custom_1`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
+In the example below, the function `base::sin(x*a)` is added to the default transformations as `sin_func`. The parameters that can be passed to the transformations need to be expressed as letters starting starting from a, b, c and so on... 
 
 
 ```{r, warning=F, message=FALSE}
-
-trans_df = trans_df %>% 
-  rbind(c('custom_1',FALSE,'sin(x*a)',5))
+trans_df = default_trans_df() %>% 
+  rbind(c('sin_func',FALSE,'sin(x*a)',5))
 
 trans_df %>%
   datatable(rownames = NULL,
@@ -451,7 +452,7 @@ This `trans_df` can now be used to generate a model table and run models.
 
 model_table = build_model_table(ivs = ivs,
                                 trans_df = trans_df) %>% 
-  mutate(custom_1 = if_else(variable == 'trend','0.5',''))
+  mutate(sin_func = if_else(variable == 'trend','5e-2',''))
 
 model_table %>% 
   datatable(rownames = NULL)
@@ -460,20 +461,19 @@ model_table %>%
 
 ```{r, warning=F, message=FALSE}
 
-
 model = run_model(data = data,
                   dv = dv,
                   model_table = model_table,
-                  trans_df = trans_df)
+                  trans_df = trans_df,
+                  verbose = T)
 
 model %>% 
   response_curves(
-    x_min = 0,
-    x_max = 30,
-    y_min = -20000,
-    y_max = 20000,
-    interval = 0.01
-    )
+    verbose = T,
+    interval = 1,
+    x_max = 1500,
+    x_min = -1500
+  )
 
 ```
 
@@ -530,7 +530,7 @@ model %>%
 
 When modelling, testing one variable at the time can be time consuming and inconclusive. For this reason it is useful to be able to test wider ranges of models that span across different variables and transformations. 
 
-Using a simliar set of transformations as before, here we need to specify the possible parameter values for each function, for each variable.
+Using a similar set of transformations as before, here we need to specify the possible parameter values for each function, for each variable.
 
 ```{r, warning=F, message=FALSE}
 
@@ -592,7 +592,10 @@ Using the function `linea::run_combo_model()` you can run and visualize individu
 
 combinations %>% 
   run_combo_model(results_row = 1) %>% 
-  response_curves()
+  response_curves(
+    x_min = 0,
+    x_max = 1500
+    )
 
 ```
 
