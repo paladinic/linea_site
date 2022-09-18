@@ -219,21 +219,22 @@ The commercial products being developed:
 
 A few improvements on the way:
 
-* improving the pooled modelling interface (i.e. meta_data)
-* optimizing `linea::what_combo()`
-* expanding `linea::hill_function()`
+* Bayesian regression
+* Nested models
 
 A few features in development:
 
-* Offset / Fixed coefficients
-* VIF
-* Model Nesting
-* Bayesian Modelling
+* economy and climate variables
+* save to Google Drive
 
-Other developments:
+Future developments:
 
 * Python implementation of <span class='logo_span'>LINEA</span>
 
+
+Latest developments:
+
+* You can consult <span class='logo_span'>LINEA</span>'s [NEWS.md](https://github.com/paladinic/linea/blob/master/NEWS.md) page on Github for details on the improvements from the last version.
 
 <footer class="footer_home">
   <span>

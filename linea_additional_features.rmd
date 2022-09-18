@@ -418,7 +418,7 @@ data %>%
 ```
 
 
-To run a pooled model we must create a meta_data `data.frame` which maps variables to be used in the pooling as either 'POOL' for the categorical variable (i.e. `country`) and 'STA' for the variables to be normalized by the pooling. To enforce the normalization the `normalise_by_pool` parameter of the `linea::run_model()` function must be set to `TRUE`, 
+To run a pooled model we must pass a `pool_var`, a character string of the pool variable name (i.e. `country`), to `linea::run_model()`. To enforce the normalization the `normalise_by_pool` parameter of the `linea::run_model()` function must be set to `TRUE`. 
 
 ```{r, warning=F, message=FALSE}
 
@@ -426,16 +426,13 @@ dv = 'amazon'
 ivs = c('christmas','rakhi','diwali')
 id_var = 'Week'
 
-meta_data = tibble(
-  variable = c("amazon", "rakhi", "country"),
-  meta = c("STA", "STA", "POOL")
-)
+pool_var = 'country'
 
 model = run_model(data = data,
                   dv = dv,
                   ivs = ivs,
                   id_var = id_var,
-                  meta_data = meta_data,
+                  pool_var = pool_var,
                   normalise_by_pool = TRUE)
 
 model %>% 

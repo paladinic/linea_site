@@ -76,11 +76,12 @@ library(tidyverse) # data manipulation
 library(plotly) # visualization
 library(DT) # visualization
 
-data_path = 'https://raw.githubusercontent.com/paladinic/data/main/ecomm_data.csv'
+data_path = 'https://raw.githubusercontent.com/paladinic/data/main/sales_ts.csv'
 
 data = read_xcsv(file = data_path)
 data = data %>% 
-  get_seasonality(date_col_name = 'date',date_type = 'weekly starting')
+  get_seasonality(date_col_name = 'week',date_type = 'weekly starting') %>% 
+  gt_f(kw = 'bitcoin',date_col = 'week')
 
 data %>%
   datatable(rownames = NULL,
@@ -108,8 +109,8 @@ This function only makes sense on time-bound models.
 ```{r, warning=F, message=FALSE}
 
 
-raw_variable = data$online_media
-dates = data$date
+raw_variable = data$vod_spend
+dates = data$week
 
 plot_ly() %>%
   add_lines(y = raw_variable, x = dates, name = 'raw') %>%
@@ -145,8 +146,9 @@ Where `v` is the vector to be transformed and `m` defines the shape of the trans
 
 ```{r message=FALSE, warning=FALSE}
 
-raw_variable = data$christmas
-dates = data$date
+raw_variable = data$gtrends_bitcoin
+dates = data$week[!is.na(raw_variable)]
+raw_variable = raw_variable[!is.na(raw_variable)]
 
 plot_ly() %>%
   add_lines(y = raw_variable, x = dates, name = 'raw') %>%
@@ -370,7 +372,7 @@ This can be accomplished using a model table which specifies each variable's tra
 
 ```{r, warning=F, message=FALSE}
 
-ivs =  c('covid','christmas','trend')
+ivs =  c('vod_spend','relative_price','promotions','trend')
 
 model_table = build_model_table(ivs =  ivs)
 
@@ -384,8 +386,8 @@ The model table can be written as a CSV or Excel and modified outside of R, or u
 
 ```{r, warning=F, message=FALSE}
 model_table = model_table %>%
-  mutate(hill = if_else(variable ==  'covid','10,1',hill)) %>% 
-  mutate(decay = if_else(variable ==  'covid','.5',decay))
+  mutate(hill = if_else(variable ==  'vod_spend','10000,1',hill)) %>% 
+  mutate(decay = if_else(variable ==  'vod_spend','.5',decay))
 
 model_table %>%
   datatable(rownames = NULL,
@@ -397,7 +399,7 @@ The model table can be used as an input in the `linea::run_model()` function. Th
 
 ```{r, warning=F, message=FALSE}
 
-dv = 'ecommerce'
+dv = 'sales'
 
 model = run_model(data = data,
                   dv = dv,
@@ -405,11 +407,9 @@ model = run_model(data = data,
 
 model %>% 
   response_curves(
+    x_max = 5e5,
     x_min = 0,
-    x_max = 30,
-    y_min = 0,
-    y_max = 20000,
-    interval = 0.01
+    y_max = 5e5
     )
 ```
 <br>
@@ -451,7 +451,7 @@ This `trans_df` can now be used to generate a model table and run models.
 
 model_table = build_model_table(ivs = ivs,
                                 trans_df = trans_df) %>% 
-  mutate(custom_1 = if_else(variable == 'christmas','0.5',''))
+  mutate(custom_1 = if_else(variable == 'trend','0.5',''))
 
 model_table %>% 
   datatable(rownames = NULL)
@@ -521,7 +521,7 @@ Once the `trans_df` is ready, it can be passed to the `linea::what_trans()` func
 ```{r, warning=F, message=FALSE}
 model %>% 
   what_trans(trans_df = trans_df,
-             variable ='offline_media') %>% 
+             variable ='display_spend') %>% 
   datatable(rownames = NULL)
 ```
 
@@ -539,18 +539,23 @@ trans_df = data.frame(
  func = c(
    'linea::diminish(x,a)',
    'linea::decay(x,a)',
-   "linea::hill_function(x,a,b,c)",
+   "linea::hill_function(x,a,b)",
    '(x^a)'
  ),
  order = 1:4
 ) %>%
- dplyr::mutate(offline_media = dplyr::if_else(condition = name == 'hill',
-                                              '(1,50),(1),(1,100)',
+ mutate(display_spend = if_else(condition = name == 'hill',
+                                              '(1,50,100),(1,5)',
                                               '')) %>%
- dplyr::mutate(online_media = dplyr::if_else(condition = name == 'decay',
-                                             '.1,.7 ',
-                                             '')) %>%
- dplyr::mutate(promo = '')
+ mutate(display_spend = if_else(condition = name == 'decay',
+                                             '0,.1,.7 ',
+                                display_spend)) %>%
+ mutate(vod_spend = if_else(condition = name == 'hill',
+                                              '(1,50,100),(1,5)',
+                                              '')) %>%
+ mutate(vod_spend = if_else(condition = name == 'decay',
+                                             '0,.1,.7 ',
+                                vod_spend)) 
 
 
 trans_df %>% 
@@ -578,6 +583,16 @@ combinations$results %>%
 ```{r, warning=F, message=FALSE}
 
 combinations$trans_parameters
+
+```
+
+Using the function `linea::run_combo_model()` you can run and visualize individual models within the combinations, by speci 
+
+```{r, warning=F, message=FALSE}
+
+combinations %>% 
+  run_combo_model(results_row = 1) %>% 
+  response_curves()
 
 ```
 
